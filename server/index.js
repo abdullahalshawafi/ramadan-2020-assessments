@@ -27,7 +27,10 @@ app.post('/video-request', upload.none(), async (req, res, next) => {
 });
 
 app.get('/video-request', async (req, res, next) => {
+  const { sortBy } = req.query;
   const data = await VideoRequestData.getAllVideoRequests();
+  if (sortBy === "sort_by_top")
+    data.sort((a, b) => (b.votes.ups - b.votes.downs) - (a.votes.ups - a.votes.downs));
   res.send(data);
   next();
 });
@@ -46,7 +49,7 @@ app.post('/users/login', async (req, res, next) => {
 
 app.use(express.json());
 
-app.put('/video-request/vote', upload.none(), async (req, res, next) => {
+app.put('/video-request/vote', async (req, res, next) => {
   const { id, vote_type } = req.body;
   const response = await VideoRequestData.updateVoteForRequest(id, vote_type);
   res.send(response);
