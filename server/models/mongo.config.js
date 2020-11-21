@@ -8,7 +8,11 @@ if (!mongodbUrl) {
   return;
 }
 
-mongoose.connect(mongodbUrl, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(mongodbUrl, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false
+});
 const db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'connection error:'));
