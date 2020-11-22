@@ -11,18 +11,20 @@
 <body>
   <div class="container my-5">
     <div class="formContainer my-5">
-      <form id="videoReqForm" autocomplete="off">
+      <form id="videoReqForm" autocomplete="off" novalidate>
         <div class="row">
           <div class="col-md">
             <div class="form-group">
               <label for="author_name">Your name *</label>
-              <input class="form-control" name="author_name" placeholder="Write your name here" />
+              <input type="text" class="form-control" name="author_name" placeholder="Write your name here" />
+              <p class="invalid-feedback">This field is required</p>
             </div>
           </div>
           <div class="col-md">
             <div class="form-group">
               <label for="author_email">Your email *</label>
-              <input class="form-control" name="author_email" placeholder="Write your email here" />
+              <input type="email" class="form-control" name="author_email" placeholder="Write your email here" />
+              <p class="invalid-feedback">This field is required and must be a valid email</p>
             </div>
           </div>
         </div>
@@ -31,7 +33,9 @@
           <div class="col-md">
             <div class="form-group">
               <label for="topic_title">Topic *</label>
-              <input class="form-control" name="topic_title" placeholder="Write your suggested topic here" />
+              <input type="text" class="form-control" name="topic_title"
+                placeholder="Write your suggested topic here" />
+              <p class="invalid-feedback">This field is required and must be less than 100 character</p>
             </div>
           </div>
           <div class="col-md">
@@ -51,6 +55,7 @@
               <label for="topic_details">More details *</label>
               <textarea class="form-control" name="topic_details"
                 placeholder="Write your topic in more details here"></textarea>
+              <p class="invalid-feedback">This field is required</p>
             </div>
           </div>
           <div class="col-md">

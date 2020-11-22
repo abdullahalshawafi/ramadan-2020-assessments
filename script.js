@@ -3,6 +3,36 @@ const sort_by_top = document.getElementById('sort_by_top');
 const sort_by_new = document.getElementById('sort_by_new');
 const search_box = document.getElementById('search_box');
 
+const isFormValid = formData => {
+    const name = formData.get('author_name');
+    const email = formData.get('author_email');
+    const title = formData.get('topic_title');
+    const details = formData.get('topic_details');
+    const emailRegex = /^((?!\.)[\w-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/;
+
+    if (!name)
+        document.getElementsByName('author_name')[0].classList.add('is-invalid');
+
+    if (!email || !emailRegex.test(email))
+        document.getElementsByName('author_email')[0].classList.add('is-invalid');
+
+    if (!title || title.length > 100)
+        document.getElementsByName('topic_title')[0].classList.add('is-invalid');
+
+    if (!details)
+        document.getElementsByName('topic_details')[0].classList.add('is-invalid');
+
+    const invalidElements = document.querySelectorAll('#videoReqForm .is-invalid');
+    if (invalidElements.length) {
+        invalidElements.forEach(elm =>
+            elm.addEventListener('input', () => elm.classList.remove('is-invalid'))
+        );
+        return false;
+    }
+
+    return true;
+}
+
 const videoRequestBody = data =>
     `
         <div class="card-body d-flex justify-content-between flex-row">
@@ -57,9 +87,11 @@ const fetchVideoRequest = (sort = "sort_by_new", search = "") => {
 const fetchPostVideoRequest = () => {
     document.getElementById("videoReqForm").addEventListener('submit', e => {
         e.preventDefault();
+        const inputData = new FormData(e.target);
+        if (!isFormValid(inputData)) return;
         fetch("http://localhost:7777/video-request", {
             method: 'POST',
-            body: new FormData(e.target),
+            body: inputData,
         }).then(res => {
             if (res.ok)
                 return res.json();
@@ -69,6 +101,7 @@ const fetchPostVideoRequest = () => {
                 fetchVideoRequest(sortOption, search_box.value);
             else
                 document.getElementById('listOfRequests').prepend(createVideosRequests(data));
+            document.getElementById("videoReqForm").reset();
         }).catch(error => {
             console.warn(error);
         });
