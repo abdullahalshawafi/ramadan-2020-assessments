@@ -1,4 +1,7 @@
 let sortOption = "sort_by_new";
+const sort_by_top = document.getElementById('sort_by_top');
+const sort_by_new = document.getElementById('sort_by_new');
+const search_box = document.getElementById('search_box');
 
 const videoRequestBody = data =>
     `
@@ -36,8 +39,8 @@ const createVideosRequests = data => {
     return container;
 }
 
-const fetchVideoRequest = (sort = "sort_by_new") => {
-    fetch(`http://localhost:7777/video-request/?sortBy=${sort}`)
+const fetchVideoRequest = (sort = "sort_by_new", search = "") => {
+    fetch(`http://localhost:7777/video-request/?sortBy=${sort}&search=${search}`)
         .then(res => {
             if (res.ok)
                 return res.json();
@@ -62,8 +65,8 @@ const fetchPostVideoRequest = () => {
                 return res.json();
             return Promise.reject(response);
         }).then(data => {
-            if (sortOption === "sort_by_top")
-                fetchVideoRequest(sortOption);
+            if (sortOption === "sort_by_top" || search_box.value)
+                fetchVideoRequest(sortOption, search_box.value);
             else
                 document.getElementById('listOfRequests').prepend(createVideosRequests(data));
         }).catch(error => {
@@ -82,29 +85,40 @@ const vote = (vote_type, id) => {
             return res.json();
         return Promise.reject(response);
     }).then(() => {
-        fetchVideoRequest(sortOption);
+        fetchVideoRequest(sortOption, search_box.value);
     }).catch(error => {
         console.warn(error);
     });
 }
 
+const debounce = (fn, time) => {
+    let timeout;
+    return (...arguments) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => fn.apply(this, arguments), time);
+    }
+}
+
 window.addEventListener("load", () => {
-    const sort_by_top = document.getElementById('sort_by_top');
-    const sort_by_new = document.getElementById('sort_by_new');
     sort_by_top.addEventListener('click', () => {
         sort_by_top.classList.add('active');
         sort_by_new.classList.remove('active');
         sortOption = "sort_by_top";
-        fetchVideoRequest(sortOption);
+        fetchVideoRequest(sortOption, search_box.value);
     });
     sort_by_new.addEventListener('click', () => {
         sort_by_new.classList.add('active');
         sort_by_top.classList.remove('active');
         sortOption = "sort_by_new";
-        fetchVideoRequest(sortOption);
+        fetchVideoRequest(sortOption, search_box.value);
     });
+    search_box.addEventListener('input', debounce(e => {
+        console.log(search_box.value);
+        console.log(e.key);
+        fetchVideoRequest(sortOption, search_box.value);
+    }, 300));
 
-    fetchVideoRequest(sortOption);
+    fetchVideoRequest();
     fetchPostVideoRequest();
 
 });
